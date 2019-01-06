@@ -28,7 +28,7 @@ First, install [node](https://github.com/codeforamerica/howto/blob/master/Node.j
 Then clone the repository into a folder called courtbot:
 
 ```console
-git clone git@github.com:codeforbcs/courtbot.git courtbot
+git clone https://github.com/codeforbcs/courtbot.git
 cd courtbot
 ```
 
