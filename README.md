@@ -40,6 +40,12 @@ Install node dependencies
 npm install
 ```
 
+Start the PostgreSQL service.
+
+```
+sudo service postgresql start
+```
+
 Define a new PostgreSQL user account, give it a password. You might have to create a postgres account for yourself first with superuser permissions if you don't have one already, or use sudo -u postgres before these commands.
 
 ```
@@ -59,6 +65,33 @@ Set up your environment variables.  This may require some customization-- especi
 cp .env.sample .env
 ```
 
+Postgres Note: the connection to DATA_URL in the `.env` file is assuming the courtdb user will not require authentication/password. If you `cd /etc/postgresql/10/main` (or to the location where postgres is installed) and `sudo vi pg_hba.conf` you can edit postgresql to bypass password authentication.
+
+```console
+# Database administrative login by Unix domain socket
+local   all             postgres                                trust
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     trust
+host    replication     all             127.0.0.1/32            trust
+host    replication     all             ::1/128                 trust
+````
+
+After making this postgres change run the following to reload postgres definitions and restart the psql server.
+
+```console
+sudo /etc/init.d/postgresql reload
+sudo service postgresql restart
+````
 Then, to create the tables and load in initial data:
 
 ```console
