@@ -1,14 +1,14 @@
 require('dotenv').config(); // needed for local dev when not using Heroku to pull in env vars
 const runnerScript = require('../utils/loaddata.js');
-const manager = require('../utils/db/manager')
-const runner_log = require('../utils/logger/runner_log')
-const log = require('../utils/logger')
-const {HTTPError} = require('../utils/errors')
-const {addTestCase} = require('../utils/testCase')
+const manager = require('../utils/db/manager');
+const runner_log = require('../utils/logger/runner_log');
+const log = require('../utils/logger');
+const {HTTPError} = require('../utils/errors');
+const {addTestCase} = require('../utils/testCase');
 
-let count = 0
-const max_tries = 6
-const time_between_retries = 5 * 60 * 1000
+let count = 0;
+const max_tries = 6;
+const time_between_retries = 5 * 60 * 1000;
 
 function load(){
     count++

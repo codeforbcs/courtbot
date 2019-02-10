@@ -10,8 +10,8 @@ const {HTTPError} = require('./errors')
 const CSV_DELIMITER = ',';
 
 const csv_headers = {
-    criminal_cases: ['date', 'last', 'first', 'room', 'time', 'id', 'type'],
-    civil_cases: ['date', 'last', 'first', false, 'room', 'time', 'id', false, 'violation', false]
+   criminal_cases: ['date', 'last', 'first', 'room', 'time', 'id', 'type'],
+   civil_cases: ['date', 'last', 'first', false, 'room', 'time', 'id', false, 'violation', false]
 }
 
 /**
@@ -42,7 +42,7 @@ async function loadData(dataUrls) {
         const [url, csv_type] = files[i].split('|');
         if (url.trim() == '') continue
         try {
-            await loadCSV(stream_client, url, csv_type)
+	    await loadCSV(stream_client, url, csv_type)
         } catch(err) {
             stream_client.end()
             throw(err)
@@ -62,7 +62,7 @@ async function loadData(dataUrls) {
  */
 function loadCSV(client, url, csv_type){
     /* Define transform from delivered csv to unified format suitable for DB */
-    const transformToTable = csv.transform(row => [`${row.date} ${row.time}`, `${row.first} ${row.last}`, row.room, row.id, row.type])
+    const transformToTable = csv.transform(row => [`${row.offense_date}`, `${row.fname} ${row.lname}`, row.case_no, row.case_type])
 
     /* Use the csv header array to determine which headers describe the csv.
        Default to the original citation headers */
@@ -74,23 +74,27 @@ function loadCSV(client, url, csv_type){
 
     return new Promise(async (resolve, reject) => {
         /*  Since we've transformed csv into [date, defendant, room, id] form, we can just pipe it to postgres */
-        const copy_stream = client.query(copyFrom('COPY hearings_temp ("date", "defendant", "room", "case_id", "type") FROM STDIN CSV'));
-        copy_stream.on('error', reject)
+	const copy_stream = client.query(copyFrom('COPY hearings_temp ("date", "defendant", "case_id", "type") FROM STDIN CSV'));
+        
+	copy_stream.on('error', reject)
         copy_stream.on('end',  resolve)
-
+	
         request.get(url)
         .on('response', function (res) {
             if (res.statusCode !== 200) {
               this.emit('error', new HTTPError("Error loading CSV. Return HTTP Status: "+res.statusCode))
             }
         })
-        .on('error', reject)
+        
+	.on('error', reject)
         .pipe(parser)
         .on('error', reject)
         .pipe(transformToTable)
         .pipe(csv.stringify())
         .pipe(copy_stream)
     })
+
+console.log("Transformed to table");
 }
 
 /**
