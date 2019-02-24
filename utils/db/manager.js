@@ -27,7 +27,7 @@ const createTableInstructions = {
             if (!exists) {
                 return knex.schema.createTable('hearings', (table) => {
                     table.string('defendant', 100);
-                    table.timestamp('date');
+                    table.date('date');
                     table.string('room', 100);
                     table.string('case_id', 100);
                     table.string('type', 100);
@@ -42,7 +42,7 @@ const createTableInstructions = {
         .then((exists) => {
             if (!exists) {
                 return knex.schema.createTable('requests', (table) => {
-                    table.timestamps(true, true);
+                    table.timestamp(true, true);
                     table.string('case_id', 100);
                     table.string('phone', 100);
                     table.boolean('known_case').defaultTo(false);
