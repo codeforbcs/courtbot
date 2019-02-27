@@ -26,12 +26,15 @@ const createTableInstructions = {
         .then((exists) => {
             if (!exists) {
                 return knex.schema.createTable('hearings', (table) => {
-                    table.string('defendant', 100);
-                    table.date('date');
-                    table.string('room', 100);
                     table.string('case_id', 100);
-                    table.string('type', 100);
-                    table.primary(['case_id', 'date']);
+		    table.string('type', 200);
+		    table.string('first_initial', 100);
+		    table.string('last_name', 100);
+		    table.timestamp('payment_due_date');
+		    table.timestamp('hearing_date_time');
+		    table.decimal('balance_due', 10, 2);
+		    table.string('hearing_location', 100);
+                    table.primary(['case_id']);
                     table.index('case_id');
                 })
             }

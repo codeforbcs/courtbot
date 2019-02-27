@@ -1,6 +1,6 @@
 /**
  * It's important to set the correct time zone for the database here as a tz string.
- * i.e. America/Anchorage (not -08 or PST)
+ * i.e. America/Chicago (not -06 or CST)
  * This allows us to simply insert local date/times and let the database perform the conversion
  * which will store utc in the DB.
  */

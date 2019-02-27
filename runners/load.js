@@ -14,7 +14,7 @@ function load(){
     count++
     runnerScript()
     .then((r) => runner_log.loaded(r))
-    .then(() => addTestCase())
+    //.then(() => addTestCase())
     .then(() => manager.knex.destroy())
     .catch((err) => {
         if (count < max_tries && err instanceof HTTPError){

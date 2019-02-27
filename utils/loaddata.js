@@ -8,10 +8,8 @@ const copyFrom = require('pg-copy-streams').from;
 const manager = require('./db/manager');
 const {HTTPError} = require('./errors')
 const CSV_DELIMITER = ',';
-
 const csv_headers = {
-   criminal_cases: ['date', 'last', 'first', 'room', 'time', 'id', 'type'],
-   civil_cases: ['date', 'last', 'first', false, 'room', 'time', 'id', false, 'violation', false]
+    cases: ['case_id','type','first_initial','last_name','payment_due_date','hearing_date_time','balance_due','hearing_location']
 }
 
 /**
@@ -27,6 +25,7 @@ async function loadData(dataUrls) {
     // determine what urls to load and how to extract them
     // example DATA_URL=http://courtrecords.alaska.gov/MAJIC/sandbox/acs_mo_event.csv
     // example DATA_URL=http://courtrecords.../acs_mo_event.csv|civil_cases,http://courtrecords.../acs_cr_event.csv|criminal_cases
+    console.log(csv_headers)
 
     const files = (dataUrls || process.env.DATA_URL).split(',');
 
@@ -64,7 +63,7 @@ async function loadData(dataUrls) {
 function loadCSV(client, url, csv_type){
     /* Define transform from delivered csv to unified format suitable for DB */
     
-   const transformToTable = csv.transform(row => [`${row.date} ${row.time}`, `${row.first} ${row.last}`, row.id, row.type])
+   const transformToTable = csv.transform(row => [row.case_id, row.type, row.first_initial, row.last_name, row.payment_due_date, row.hearing_date_time, row.balance_due, row.hearing_location])
     
    //console.log(transformToTable);
 
@@ -72,28 +71,28 @@ function loadCSV(client, url, csv_type){
        Default to the original citation headers */
     const parser =  csv.parse({
         delimiter: CSV_DELIMITER,
-        //columns: csv_headers[csv_type === 'criminal_cases' ? 'criminal_cases' : 'civil_cases'],
-        columns: csv_headers['civil_cases'],
+        columns: csv_headers['cases'],
 	trim: true
     })
-
+    
+    //console.log(process.env.COLUMN_HEADERS)
+    //console.log(process.env.COPY_FROM_STDIN)
     //console.log(parser)    
 
     return new Promise(async (resolve, reject) => {
         /*  Since we've transformed csv into [date, defendant, room, id] form, we can just pipe it to postgres */
-	const copy_stream = client.query(copyFrom('COPY hearings_temp ("date", "defendant", "case_id", "type") FROM STDIN CSV'));
-
+	const copy_stream = client.query(copyFrom('COPY hearings_temp ("case_id","type","first_initial","last_name","payment_due_date","hearing_date_time","balance_due","hearing_location") FROM STDIN CSV'));
+	
 	copy_stream.on('error', reject)
         copy_stream.on('end',  resolve)
         request.get(url)
         .on('response', function (res) {
 	    if (res.statusCode !== 200) {
-	       this.emit('error', new HTTPError("Error loading CSV. Return HTTP Status: "+res.statusCode))
+	       this.emit('error', new HTTPError("Error loading CSV. Return HTTP Status: " + res.statusCode))
             }
         })
         
 	.on('error', reject)
-	//.pipe(process.stdout)
 	.pipe(parser)
 	.pipe(transformToTable)
 	.pipe(csv.stringify())
@@ -109,9 +108,7 @@ function loadCSV(client, url, csv_type){
 async function copyTemp(client){
     await manager.dropTable('hearings')
     await manager.createTable('hearings')
-    let resp = await client.query(
-        'INSERT INTO hearings (date, defendant, room, case_id, type) SELECT date, defendant, room, case_id, type from hearings_temp ON CONFLICT DO NOTHING;'
-    )
+    let resp = await client.query('INSERT INTO hearings (case_id, type, first_initial, last_name, payment_due_date, hearing_date_time, balance_due, hearing_location) SELECT case_id, type, first_initial, last_name, payment_due_date, hearing_date_time, balance_due, hearing_location from hearings_temp ON CONFLICT DO NOTHING;')
     const count = resp.rowCount
     return count
 }
@@ -124,8 +121,7 @@ async function copyTemp(client){
 async function createTempHearingsTable(client){
     // Need to use the client rather than pooled knex connection
     // becuase pg temp tables are tied to the life of the client.
-    await client.query('CREATE TEMP TABLE hearings_temp (date date, defendant varchar(100), room varchar(100), case_id varchar(100), type varchar(100))'
-    )
+    await client.query('CREATE TEMP TABLE hearings_temp (case_id varchar(100), type varchar(200), first_initial varchar(100), last_name varchar(100), payment_due_date timestamp, hearing_date_time timestamp, balance_due decimal(10, 2), hearing_location varchar(300))')
     return
 }
 
