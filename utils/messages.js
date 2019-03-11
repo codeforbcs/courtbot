@@ -121,8 +121,9 @@ function iAmCourtBot() {
  */
 function invalidCaseNumber() {
     return normalizeSpaces(`Reply with a case or ticket number to sign up for a reminder.
-    Case number length should be 14, example: 1KE-18-01234MO.
-    Ticket number can be 8 to 17 letters and/or numbers in length, example: KETEEP00000123456.`);
+    Case number length should be 8, example: 19909265.
+    Ticket number can be 8 to 17 letters and/or numbers in length, example: KETEEP00000123456.
+    `);
 }
 
 /**

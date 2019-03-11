@@ -45,7 +45,7 @@ app.all('*', (req, res, next) => {
 
 /* Enable CORS support for IE8. */
 app.get('/proxy.html', (req, res) => {
-    res.send('<!DOCTYPE HTML>\n<script src="http://jpillora.com/xdomain/dist/0.6/xdomain.min.js" master="http://www.courtrecords.alaska.gov"></script>');
+    res.send('<!DOCTYPE HTML>\n<script src="http://jpillora.com/xdomain/dist/0.6/xdomain.min.js" master="http://www.courts.cstx.gov"></script>');
 });
 
 app.get('/', (req, res) => {

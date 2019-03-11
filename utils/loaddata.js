@@ -25,7 +25,6 @@ async function loadData(dataUrls) {
     // determine what urls to load and how to extract them
     // example DATA_URL=http://courtrecords.alaska.gov/MAJIC/sandbox/acs_mo_event.csv
     // example DATA_URL=http://courtrecords.../acs_mo_event.csv|civil_cases,http://courtrecords.../acs_cr_event.csv|criminal_cases
-    console.log(csv_headers)
 
     const files = (dataUrls || process.env.DATA_URL).split(',');
 
