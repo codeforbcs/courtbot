@@ -49,14 +49,14 @@ sudo service postgresql start
 Define a new PostgreSQL user account, give it a password. You might have to create a postgres account for yourself first with superuser permissions if you don't have one already, or use sudo -u postgres before these commands.
 
 ```
-createuser courtbot --pwprompt
+sudo -u postgres createuser courtbot --pwprompt
 ```
 
 Create a new PostgreSQL database and a database to run tests.
 
 ```
-createdb courtbotdb -O courtbot
-createdb courtbotdb_test -O courtbot
+sudo -u postgres createdb courtbotdb -O courtbot
+sudo -u postgres createdb courtbotdb_test -O courtbot
 ```
 
 Set up your environment variables.  This may require some customization-- especially the DATABASE_TEST_URL.
