@@ -9,7 +9,7 @@
   "main": "web.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --exit test",
-    "start": "node web.js",
+    "start": "node index.js",
     "dbsetup": "node utils/createTables.js",
     "loaddata": "node runners/load.js"
   },
@@ -21,6 +21,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "cookie-session": "^2.0.0-beta.3",
+    "cors": "^2.8.5",
     "csv": "^1.2.1",
     "dotenv": "~4.0.0",
     "emoji-strip": "^1.0.1",
