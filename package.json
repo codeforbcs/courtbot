@@ -9,7 +9,7 @@
   "main": "web.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --exit test",
-    "start": "node web.js",
+    "start": "node index.js",
     "dbsetup": "node utils/createTables.js",
     "loaddata": "node runners/load.js"
   },
