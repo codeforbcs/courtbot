@@ -45,7 +45,7 @@ const createTableInstructions = {
         .then((exists) => {
             if (!exists) {
                 return knex.schema.createTable('requests', (table) => {
-                    table.timestamp(true, true);
+                    table.timestamp('updated_at', true);
                     table.string('case_id', 100);
                     table.string('phone', 100);
                     table.boolean('known_case').defaultTo(false);

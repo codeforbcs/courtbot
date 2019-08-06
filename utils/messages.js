@@ -21,7 +21,7 @@ function normalizeSpaces(msg) {
  * @return {String} propercased name
  */
 function cleanupName(name) {
-    return name.trim()
+    return name.toString().trim()
     .replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
@@ -64,9 +64,9 @@ function repliedNoToKeepChecking(){
  * @return {String} message.
  */
 function foundItAskForReminder(match) {
-    const caseInfo = `We found a case for ${cleanupName(match.defendant)} scheduled
-        ${(match.today ? 'today' : `on ${moment(match.date).format('ddd, MMM Do')}`)}
-        at ${moment(match.date).format('h:mm A')}, at ${match.room}.`;
+    const caseInfo = `We found a case for ${cleanupName(match.last_name)} scheduled
+        ${(match.today ? 'today' : `on ${moment(match.hearing_date_time).format('ddd, MMM Do')}`)}
+        at ${moment(match.hearing_date_time).format('h:mm A')}, at ${match.hearing_location}.`;
 
     let futureHearing = '';
     if (match.has_past) {
@@ -90,9 +90,9 @@ function foundItAskForReminder(match) {
  */
 function foundItWillRemind(includeSalutation, match) {
     const salutation = `Hello from the ${process.env.COURT_NAME}. `;
-    const caseInfo = `We found a case for ${cleanupName(match.defendant)} scheduled
-        ${(match.today ? 'today' : `on ${moment(match.date).format('ddd, MMM Do')}`)}
-        at ${moment(match.date).format('h:mm A')}, at ${match.room}.`;
+    const caseInfo = `We found a case for ${cleanupName(match.last_name)} scheduled
+        ${(match.today ? 'today' : `on ${moment(match.hearing_date_time).format('ddd, MMM Do')}`)}
+        at ${moment(match.hearing_date_time).format('h:mm A')}, at ${match.hearing_location}.`;
 
     let futureHearing = '';
     if (match.has_past) {
@@ -145,8 +145,8 @@ function notFoundAskToKeepLooking() {
  * @return {string} message
  */
 function reminder(occurrence) {
-    return normalizeSpaces(`Courtesy reminder: ${cleanupName(occurrence.defendant)} has a court hearing on
-        ${moment(occurrence.date).format('ddd, MMM Do')} at ${moment(occurrence.date).format('h:mm A')}, at ${occurrence.room}
+    return normalizeSpaces(`Courtesy reminder: ${cleanupName(occurrence.last_name)} has a court hearing on
+        ${moment(occurrence.hearing_date_time).format('ddd, MMM Do')} at ${moment(occurrence.hearing_date_time).format('h:mm A')}, at ${occurrence.hearing_location}
         for case/ticket number: ${occurrence.case_id}.
         You should verify your hearing date and time by going to
         ${process.env.COURT_PUBLIC_URL}.
