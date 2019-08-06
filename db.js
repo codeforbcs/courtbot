@@ -40,8 +40,8 @@ function decryptPhone(phone) {
 function findCitation(case_id) {
     return knex('hearings').where('case_id', case_id )
     .select('*', knex.raw(`
-        CURRENT_DATE = date_trunc('day', date) as today,
-        date < CURRENT_TIMESTAMP as has_past
+        CURRENT_DATE = date_trunc('day', hearing_date_time) as today,
+        hearing_date_time < CURRENT_TIMESTAMP as has_past
     `))
 }
 
@@ -121,7 +121,7 @@ function deactivateRequest(case_id, phone) {
  * @returns {Promise} array of rows from hearings table
  */
 function fuzzySearch(str) {
-    const parts = str.trim().toUpperCase().split(' ');
+    const parts = str.toString().trim().toUpperCase().split(' ');
 
     // Search for Names
     let query = knex('hearings').where('defendant', 'ilike', `%${parts[0]}%`);

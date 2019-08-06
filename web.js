@@ -67,7 +67,7 @@ app.get('/cases', (req, res, next) => {
     .then((data) => {
       if (data) {
         data.forEach((d) => {
-            d.readableDate = moment(d.date).format('dddd, MMM Do'); /* eslint "no-param-reassign": "off" */
+            d.readableDate = moment(d.hearing_date_time).format('dddd, MMM Do'); /* eslint "no-param-reassign": "off" */
         });
       }
       return res.json(data);
@@ -241,15 +241,13 @@ function unservicableRequest(req, res, next){
  * @param {String} text
  */
 function possibleCaseID(text) {
-    /*  From AK Court System:
-        - A citation must start with an alpha letter (A-Z) and followed 
-          by only alpha (A-Z) and numeric (0-9) letters with a length of 8-17.   
-        - Case number must start with a number (1-4) 
-          and have a length of 14 exactly with dashes.
+    /*  From COCS Court System:
+        -Case number length should be 8, example: 19979265. 
+        -Ticket/Citation number can be 7 to 17 letters and/or numbers in length, example: KETEEP00000123456.
     */     
    
-    const citation_rx = /^[A-Za-z][A-Za-z0-9]{7,16}$/
-    const case_rx = /^[1-4][A-Za-z0-9-]{13}$/
+    const citation_rx = /^[0-9]{1,8}$/
+    const case_rx = /^[A-Za-z0-9]{7,17}$/
     return case_rx.test(text) ||  citation_rx.test(text);
 }
 

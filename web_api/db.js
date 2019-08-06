@@ -9,9 +9,9 @@ const knex = manager.knex;
  * @param {*} case_id
  */
 function findHearing(case_id) {
-    case_id = case_id.toUpperCase().trim();
+    /*case_id = case_id.toUpperCase().trim();*/
     return knex.raw(`
-    SELECT h.case_id, h.date, h.room, h.type, h.defendant
+    SELECT h.case_id, h.hearing_date_time, h.hearing_location, h.type, h.last_name
     FROM hearings h
     WHERE case_id = :case_id
     `, {case_id: case_id})
@@ -90,7 +90,7 @@ function notificationErrors(daysback = 7){
  * @param {String} case_id
  */
 function findRequestNotifications(case_id) {
-    case_id = case_id.toUpperCase().trim();
+    /*case_id = case_id.toUpperCase().trim();*/
     return knex.raw(`
     SELECT r.case_id, r.phone, r.created_at, r.active, json_agg(n) as notifications
     FROM requests r

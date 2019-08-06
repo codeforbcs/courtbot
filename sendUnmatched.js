@@ -73,8 +73,8 @@ function notifyExpired(expiredRequest) {
  */
 function discoverNewCitations() {
     return knex.select('*', knex.raw(`
-        CURRENT_DATE = date_trunc('day', date) as today,
-        date < CURRENT_TIMESTAMP as has_past`))
+        CURRENT_DATE = date_trunc('day', hearing_date_time) as today,
+        hearing_date_time < CURRENT_TIMESTAMP as has_past`))
     .from('requests')
     .innerJoin('hearings', {'requests.case_id': 'hearings.case_id'})
     .where('requests.known_case', false)
